@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Scanner;
 
 public class SpellChecker {
-    public static void main(String[] args){
+    /*public static void main(String[] args){
         ArrayList<String> test = new ArrayList<>();
         test.add("only");
         test.add("one");
         test.add("mistakle");
         fixWords(test);
         
-    }
+    }*/
     
     static List dictionary = loadDictionary("dict.txt");
     

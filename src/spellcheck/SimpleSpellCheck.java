@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class SimpleSpellCheck {
-	public static void main (String[] args){
+	/*public static void main (String[] args){
 		String s1 = "baget";
 		String s2 = "badger";
 		
@@ -20,7 +20,7 @@ public class SimpleSpellCheck {
 		System.out.println("kitin = " + spellCheck("kitin"));
 		System.out.println("kitteng = " + spellCheck("kitteng"));
 	
-	}
+	}*/
 
 	public static ArrayList<String> spellCheck(String input) {
 		
