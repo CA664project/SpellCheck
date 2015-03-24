@@ -1,0 +1,181 @@
+package spellcheck;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class SpellChecker {
+    public static void main(String[] args){
+        ArrayList<String> test = new ArrayList<>();
+        test.add("only");
+        test.add("one");
+        test.add("mistakle");
+        fixWords(test);
+        
+    }
+    
+    static List dictionary = loadDictionary("dict.txt");
+    
+    public static ArrayList<String> getText(String filename){
+        //Stores the list of words
+        File file = new File(filename);
+        ArrayList<String> text = new ArrayList<>();
+        try{
+        Scanner inputText = new Scanner(file);
+        while(inputText.hasNext()){
+            text.add(inputText.next());
+            //System.out.println(text.get(text.size()-1));            
+        }
+        } catch(FileNotFoundException e){
+            text.add("File not found");
+        }
+        return text;
+    }
+    
+    public static ArrayList<String> spellCheck(String input) {
+
+        /****check input edit Distance vs all words in dictionary, add all mins to list (temp for now)****/
+
+        ArrayList<Integer> minDistance = new ArrayList<>(); //stores the minEditDist of each word in dict
+        ArrayList<String> Dwords = new ArrayList<>(); //stores each word in the dic
+        ArrayList<String> mins = new ArrayList<>(); //stores the list of words with smallest minEditDist
+
+        /****
+                Reads in the Dictionary file for now
+                can be replaced later to only accept another Dwords arrayList!?
+
+        ****/
+
+        try {
+                
+                //Dictionary now instance variable, need to update
+            
+                BufferedReader in = new BufferedReader(new FileReader("dict.txt"));
+                for (String i = in.readLine(); i != null; i = in.readLine()) {
+                        Dwords.add(i);
+                        minDistance.add(minDist(input, i)); 
+                }
+                in.close();
+
+                /***
+                        for (int i = 0; i < Dwords.size(); i++) {
+                                minDistance.add(minDist(input, i));
+                        }
+                ***/
+                for (int i = 0; i < minDistance.size(); i++) {
+                        if ( minDistance.get(i) == findMinEditDist(minDistance)) {
+                                mins.add(Dwords.get(i)); 
+                        }
+                }
+
+                return mins;
+
+        } catch (IOException e) {
+                System.out.println("Error: IOException in spellCheck() method! (unable to read dict.txt?)");
+                return null;
+        }
+
+
+    }
+    
+    public static ArrayList<String> fixWords(ArrayList<String> text){
+        //ArrayList<String> output = new ArrayList<>();
+        for(int i = 0; i < text.size(); i++){
+            System.out.println("Checking " + text.get(i));
+            if(!inDictionary(text.get(i))){
+                System.out.println("Fixing " + text.get(i));
+                text.set(i, spellCheck(text.get(i)).get(0));
+                System.out.println("Is now " + text.get(i));
+            }
+        }
+        
+        
+        return text;
+    }
+
+    private static int findMinEditDist(ArrayList<Integer> arr) {
+            int min = 10000;
+            for (int i = 0; i < arr.size(); i++) {
+                    if (arr.get(i) < min ) {
+                            min = arr.get(i);
+                    }
+            }
+
+            return min;			
+    }
+
+    private static int minimum(int a, int b, int c) {                            
+        return Math.min(Math.min(a, b), c);                                      
+    }
+
+    public static int minDist(String target, String source){	
+            //int m = target.length();
+            //int n = source.length();
+            //System.out.println("target length: "+target.length()+" source length: "+source.length());
+
+            int[][] dist = new int[target.length()+1][source.length()+1];  
+            dist[0][0] = 0;
+
+            for (int i=0; i<target.length()+1;i++){
+                    dist[i][0] = i;
+            }
+
+            for (int j=0;j<source.length()+1;j++){
+                    dist[0][j]= j;
+            }
+
+            /***********
+            for(int i=0; i<target.length()+1; i++){  
+            for(int j=0; j<source.length()+1; j++){  
+
+                    System.out.print(" [ " + dist[i][j] + " ] ");
+            }
+            System.out.print("\n");
+        }
+            ***********/
+            //System.out.println();
+            //System.out.println(dist[0][0]);
+            for (int i=1; i<=target.length();i++){
+                    for (int j=1; j<=source.length(); j++){
+
+                            dist[i][j]= minimum(
+                                            dist[i-1][j]+1,
+                                            dist[i][j-1]+1,
+                                            dist[i-1][j-1]+((target.charAt(i-1)== source.charAt(j-1)) ? 0 : 1)); // boolean to int here
+                    }
+            }
+            /***********
+            for(int i=0; i<target.length()+1; i++){  
+            for(int j=0; j<source.length()+1; j++){  
+
+                    System.out.print(" [ " + dist[i][j] + " ] ");
+            }
+            System.out.print("\n");
+        }
+            ***********/
+            return dist[target.length()][source.length()]; 
+    }
+    
+    public static boolean inDictionary(String word){
+        return dictionary.contains(word);
+    }
+    
+    private static ArrayList<String> loadDictionary(String filename){
+        ArrayList<String> dict = new ArrayList<>();
+        try (BufferedReader in = new BufferedReader(new FileReader("dict.txt"))) {
+            for (String i = in.readLine(); i != null; i = in.readLine()) {
+                dict.add(i);
+            }
+        }catch (IOException e) {
+                System.out.println("Error: IOException in spellCheck() method! (unable to read dict.txt?)");
+        }
+        return dict;
+    }
+    
+    
+}
