@@ -19,7 +19,7 @@ public class SpellChecker {
         
     }*/
     
-    static List dictionary = loadDictionary("dict.txt");
+    static ArrayList<String> dictionary = loadDictionary("dictXtra.txt");
     
     public static ArrayList<String> getText(String filename){
         //Stores the list of words
@@ -38,11 +38,10 @@ public class SpellChecker {
     }
     
     public static ArrayList<String> spellCheck(String input) {
-
+        input = input.toLowerCase();
         /****check input edit Distance vs all words in dictionary, add all mins to list (temp for now)****/
 
         ArrayList<Integer> minDistance = new ArrayList<>(); //stores the minEditDist of each word in dict
-        ArrayList<String> Dwords = new ArrayList<>(); //stores each word in the dic
         ArrayList<String> mins = new ArrayList<>(); //stores the list of words with smallest minEditDist
 
         /****
@@ -50,36 +49,20 @@ public class SpellChecker {
                 can be replaced later to only accept another Dwords arrayList!?
 
         ****/
-
-        try {
-                
-                //Dictionary now instance variable, need to update
-            
-                BufferedReader in = new BufferedReader(new FileReader("dict.txt"));
-                for (String i = in.readLine(); i != null; i = in.readLine()) {
-                        Dwords.add(i);
-                        minDistance.add(minDist(input, i)); 
+        int minEditDist = Integer.MAX_VALUE;
+        int currEditDist;
+        for (int i = 0; i < dictionary.size(); i++) {
+                currEditDist = minDist(input, dictionary.get(i));
+                if(currEditDist < minEditDist){
+                    mins = new ArrayList<>();
+                    minEditDist = currEditDist;
                 }
-                in.close();
-
-                /***
-                        for (int i = 0; i < Dwords.size(); i++) {
-                                minDistance.add(minDist(input, i));
-                        }
-                ***/
-                for (int i = 0; i < minDistance.size(); i++) {
-                        if ( minDistance.get(i) == findMinEditDist(minDistance)) {
-                                mins.add(Dwords.get(i)); 
-                        }
+                if(currEditDist == minEditDist){
+                    mins.add(dictionary.get(i));
                 }
-
-                return mins;
-
-        } catch (IOException e) {
-                System.out.println("Error: IOException in spellCheck() method! (unable to read dict.txt?)");
-                return null;
         }
 
+        return mins;
 
     }
     
