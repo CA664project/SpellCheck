@@ -2,6 +2,8 @@ package spellcheck;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import javax.swing.JFileChooser;
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -16,15 +18,15 @@ import javax.swing.JFileChooser;
 public class FilePicker extends javax.swing.JFrame {
     
 
-    /**
-     * Creates new form FilePicker
-     */
     private String filename;
     private ArrayList<String> words;
+    private Iterator<String> textIter;
 
     
     public FilePicker() {
+        
         initComponents();
+        suggestedWords.removeAllItems();
     }
 
     /**
@@ -42,6 +44,8 @@ public class FilePicker extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         ResultBox = new javax.swing.JTextPane();
         Correct = new javax.swing.JButton();
+        suggestedWords = new javax.swing.JComboBox();
+        select = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -64,22 +68,39 @@ public class FilePicker extends javax.swing.JFrame {
             }
         });
 
+        suggestedWords.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        select.setText("Replace");
+        select.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(suggestedWords, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(39, 39, 39)
+                                .addComponent(select)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(66, 66, 66)
+                .addGap(75, 75, 75)
                 .addComponent(OpenFile)
-                .addGap(68, 68, 68)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(Correct)
-                .addContainerGap(86, Short.MAX_VALUE))
+                .addGap(60, 60, 60))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -91,7 +112,13 @@ public class FilePicker extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(suggestedWords, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(select)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -114,14 +141,36 @@ public class FilePicker extends javax.swing.JFrame {
     }//GEN-LAST:event_OpenFileActionPerformed
 
     private void CorrectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CorrectActionPerformed
-        words = SpellChecker.fixWords(words);
-        String text = "";
-        for(String word : words){
-            text = text + " " + word;
-        }
-        ResultBox.setText(text);
+        ResultBox.setText("");
+        this.textIter = words.iterator();
+        correctNext(textIter.next());        
     }//GEN-LAST:event_CorrectActionPerformed
 
+    private void selectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectActionPerformed
+        correctNext(suggestedWords.getSelectedItem().toString());
+    }//GEN-LAST:event_selectActionPerformed
+
+    private void correctNext(String word){
+        List<String> suggWords;
+        if(!SpellChecker.inDictionary(word)){
+            suggWords = SpellChecker.spellCheck(word);
+            suggestedWords.removeAllItems();
+            for(String entry : suggWords){
+                suggestedWords.addItem(entry);
+            }            
+        } else {
+            
+            if(textIter.hasNext()){
+                ResultBox.setText(ResultBox.getText() + word + " ");
+                correctNext(textIter.next());
+            } else {
+                ResultBox.setText(ResultBox.getText() + word + " ");
+                suggestedWords.removeAllItems();
+            }            
+        }       
+    }
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -162,5 +211,7 @@ public class FilePicker extends javax.swing.JFrame {
     private javax.swing.JTextPane ResultBox;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton select;
+    private javax.swing.JComboBox suggestedWords;
     // End of variables declaration//GEN-END:variables
 }

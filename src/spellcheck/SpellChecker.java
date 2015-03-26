@@ -6,18 +6,29 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
+/**
+ *
+ * @author Shaun
+ */
 public class SpellChecker {
-    /*public static void main(String[] args){
+    public static void main(String[] args){
         ArrayList<String> test = new ArrayList<>();
         test.add("only");
         test.add("one");
         test.add("mistakle");
-        fixWords(test);
+        System.out.println(dictionary.contains("a"));
+        /*for(String word: dictionary){
+            System.out.println(word);
+            if(word.equals("id")){
+               break;
+            }
+           
+        }*/
+        //fixWords(test);
         
-    }*/
+    }
     
     static ArrayList<String> dictionary = loadDictionary("dictXtra.txt");
     
@@ -145,13 +156,15 @@ public class SpellChecker {
     }
     
     public static boolean inDictionary(String word){
+        word = word.toLowerCase();
         return dictionary.contains(word);
     }
     
     private static ArrayList<String> loadDictionary(String filename){
         ArrayList<String> dict = new ArrayList<>();
-        try (BufferedReader in = new BufferedReader(new FileReader("dict.txt"))) {
+        try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
             for (String i = in.readLine(); i != null; i = in.readLine()) {
+                //System.out.println(i);
                 dict.add(i);
             }
         }catch (IOException e) {
