@@ -1,6 +1,8 @@
 package spellcheck;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +48,7 @@ public class FilePicker extends javax.swing.JFrame {
         Correct = new javax.swing.JButton();
         suggestedWords = new javax.swing.JComboBox();
         select = new javax.swing.JButton();
+        saveFile = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -77,6 +80,13 @@ public class FilePicker extends javax.swing.JFrame {
             }
         });
 
+        saveFile.setText("Save Output");
+        saveFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveFileActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -93,7 +103,10 @@ public class FilePicker extends javax.swing.JFrame {
                                 .addComponent(suggestedWords, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(39, 39, 39)
-                                .addComponent(select)))))
+                                .addComponent(select))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(saveFile)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(75, 75, 75)
@@ -113,12 +126,13 @@ public class FilePicker extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(suggestedWords, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(select)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(saveFile))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -126,17 +140,19 @@ public class FilePicker extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void OpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenFileActionPerformed
-        // TODO add your handling code here:
         JFileChooser choose = new JFileChooser();
-        int returnVal = choose.showOpenDialog(FilePicker.this);
-        File file = choose.getSelectedFile();
-        filename = file.getAbsolutePath();
-        words = SpellChecker.getText(filename);
-        String text = "";
-        for(String word : words){
-            text = text + " " + word;
+        int failure = choose.showOpenDialog(FilePicker.this);
+        if(failure == 0){
+            File file = choose.getSelectedFile();
+            filename = file.getAbsolutePath();
+            words = SpellChecker.getText(filename);
+            String text = "";
+            for(String word : words){
+                text = text + " " + word;
+            }
+            DisplayBox.setText(text);  
         }
-        DisplayBox.setText(text);
+
 
     }//GEN-LAST:event_OpenFileActionPerformed
 
@@ -147,8 +163,24 @@ public class FilePicker extends javax.swing.JFrame {
     }//GEN-LAST:event_CorrectActionPerformed
 
     private void selectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectActionPerformed
-        correctNext(suggestedWords.getSelectedItem().toString());
+        if(suggestedWords.getItemCount() > 0){
+            correctNext(suggestedWords.getSelectedItem().toString());
+        }
+        
     }//GEN-LAST:event_selectActionPerformed
+
+    private void saveFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFileActionPerformed
+        JFileChooser save = new JFileChooser();
+        int check = save.showSaveDialog(FilePicker.this);
+        if(check == 0){
+            File file = save.getSelectedFile();
+            try(BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsolutePath()))){
+                bw.write(ResultBox.getText());  
+                bw.close();
+            } catch(Exception e){}   
+        }
+
+    }//GEN-LAST:event_saveFileActionPerformed
 
     private void correctNext(String word){
         List<String> suggWords;
@@ -211,6 +243,7 @@ public class FilePicker extends javax.swing.JFrame {
     private javax.swing.JTextPane ResultBox;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton saveFile;
     private javax.swing.JButton select;
     private javax.swing.JComboBox suggestedWords;
     // End of variables declaration//GEN-END:variables

@@ -1,12 +1,17 @@
 package spellcheck;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  *
@@ -52,18 +57,69 @@ public class SpellChecker {
         input = input.toLowerCase();
         /****check input edit Distance vs all words in dictionary, add all mins to list (temp for now)****/
 
-        ArrayList<Integer> minDistance = new ArrayList<>(); //stores the minEditDist of each word in dict
+         //  ArrayList<Integer> minDistance = new ArrayList<>(); //stores the minEditDist of each word in dict
+        HashMap editDwords = new HashMap();
         ArrayList<String> mins = new ArrayList<>(); //stores the list of words with smallest minEditDist
 
         /****
-                Reads in the Dictionary file for now
-                can be replaced later to only accept another Dwords arrayList!?
-
+            key = dictionary word
+            value = minimum edit distance              
+            put(key, value)
         ****/
         int minEditDist = Integer.MAX_VALUE;
+      
         int currEditDist;
         for (int i = 0; i < dictionary.size(); i++) {
-                currEditDist = minDist(input, dictionary.get(i));
+            currEditDist = DLdistance(input, dictionary.get(i));
+            editDwords.put(dictionary.get(i), currEditDist);
+
+            if(currEditDist < minEditDist) {
+                minEditDist = currEditDist;
+            }
+        }
+        
+        System.out.println("min Edit Distance = " + minEditDist);
+        Set set = editDwords.entrySet();
+        Iterator<Map.Entry<String, Integer>> i = set.iterator();
+        Map.Entry<String, Integer> me;
+        
+        
+        int distance = minEditDist;
+        int count = 0;
+        while(count < 5 && i.hasNext()) {
+            while(count < 5 && i.hasNext() ) {
+                me = i.next();
+                if (me.getValue() == distance) {
+                    mins.add(me.getKey());
+
+                    System.out.print(me.getValue() + ": ");
+                    System.out.println(me.getKey());
+                    //System.out.println(distance);
+                    count++;
+                }	                
+            }
+            distance++; //Increment the distan as wce
+            i = set.iterator();    //Reset the iterator        
+        }
+	        			
+	 
+	        		//add the dict word with edit dist equal to distance(value)
+	        	//	mins.add((String) dictionary.get( editDwords.get(me.get(distance) ) );
+	        		//System.out.println("test");
+	        	//} else {
+	        		//distance++;
+	        	//}
+    //    }
+        
+   /*       while(i.hasNext()) {
+           Map.Entry me = (Map.Entry)i.next();
+           System.out.print(me.getKey() + ": ");
+           System.out.println(me.getValue());
+        }
+      int minEditDist = Integer.MAX_VALUE;
+        int currEditDist;
+        for (int i = 0; i < dictionary.size(); i++) {
+                currEditDist = DLdistance(input, dictionary.get(i));
                 if(currEditDist < minEditDist){
                     mins = new ArrayList<>();
                     minEditDist = currEditDist;
@@ -71,8 +127,9 @@ public class SpellChecker {
                 if(currEditDist == minEditDist){
                     mins.add(dictionary.get(i));
                 }
+      
         }
-
+     */
         return mins;
 
     }
@@ -135,13 +192,13 @@ public class SpellChecker {
             //System.out.println();
             //System.out.println(dist[0][0]);
             for (int i=1; i<=target.length();i++){
-                    for (int j=1; j<=source.length(); j++){
+                for (int j=1; j<=source.length(); j++){
 
-                            dist[i][j]= minimum(
-                                            dist[i-1][j]+1,
-                                            dist[i][j-1]+1,
-                                            dist[i-1][j-1]+((target.charAt(i-1)== source.charAt(j-1)) ? 0 : 1)); // boolean to int here
-                    }
+                    dist[i][j]= minimum(
+                        dist[i-1][j]+1,
+                        dist[i][j-1]+1,
+                        dist[i-1][j-1]+((target.charAt(i-1)== source.charAt(j-1)) ? 0 : 1)); // boolean to int here
+                }
             }
             /***********
             for(int i=0; i<target.length()+1; i++){  
@@ -158,6 +215,42 @@ public class SpellChecker {
     public static boolean inDictionary(String word){
         word = word.toLowerCase();
         return dictionary.contains(word);
+    }
+    
+    
+    public static int DLdistance(String target, String source) {
+		
+        int[][] dist = new int[target.length()+1][source.length()+1];  
+        dist[0][0] = 0;
+
+        for (int i=0; i<target.length()+1;i++){
+            dist[i][0] = i;
+        }
+
+        for (int j=0;j<source.length()+1;j++){
+            dist[0][j]= j;
+        }
+
+
+        for (int i=1; i<=target.length();i++){
+            for (int j=1; j<=source.length(); j++){
+
+                dist[i][j]= minimum(
+                        dist[i-1][j]+1,
+                        dist[i][j-1]+1,
+                        dist[i-1][j-1]+((target.charAt(i-1) == source.charAt(j-1)) ? 0 : 1)); // boolean to int here
+
+                if ( i > 1 && j > 1 && target.charAt(i-2) == source.charAt(j-1) 
+                                && target.charAt(i-1) == source.charAt(j-2) ) {
+                    dist[i][j]= Math.min(
+                                dist[i][j],
+                                dist[i-2][j-2]+((target.charAt(i-1) == source.charAt(j-1)) ? 0 : 1));
+                }
+
+            }
+        }
+
+        return dist[target.length()][source.length()]; 
     }
     
     private static ArrayList<String> loadDictionary(String filename){
