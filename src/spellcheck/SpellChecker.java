@@ -54,6 +54,8 @@ public class SpellChecker {
     }
     
     public static ArrayList<String> spellCheck(String input) {
+        WordState state = new WordState(input);
+        state.saveState();
         input = input.toLowerCase();
         /****check input edit Distance vs all words in dictionary, add all mins to list (temp for now)****/
 
@@ -90,7 +92,7 @@ public class SpellChecker {
             while(count < 5 && i.hasNext() ) {
                 me = i.next();
                 if (me.getValue() == distance) {
-                    mins.add(me.getKey());
+                    mins.add(state.applyState(me.getKey()));
 
                     System.out.print(me.getValue() + ": ");
                     System.out.println(me.getKey());
@@ -101,35 +103,11 @@ public class SpellChecker {
             distance++; //Increment the distan as wce
             i = set.iterator();    //Reset the iterator        
         }
-	        			
-	 
-	        		//add the dict word with edit dist equal to distance(value)
-	        	//	mins.add((String) dictionary.get( editDwords.get(me.get(distance) ) );
-	        		//System.out.println("test");
-	        	//} else {
-	        		//distance++;
-	        	//}
-    //    }
-        
-   /*       while(i.hasNext()) {
-           Map.Entry me = (Map.Entry)i.next();
-           System.out.print(me.getKey() + ": ");
-           System.out.println(me.getValue());
-        }
-      int minEditDist = Integer.MAX_VALUE;
-        int currEditDist;
-        for (int i = 0; i < dictionary.size(); i++) {
-                currEditDist = DLdistance(input, dictionary.get(i));
-                if(currEditDist < minEditDist){
-                    mins = new ArrayList<>();
-                    minEditDist = currEditDist;
-                }
-                if(currEditDist == minEditDist){
-                    mins.add(dictionary.get(i));
-                }
-      
-        }
-     */
+        	        			
+	mins.add(state.applyState(input));
+        //add the dict word with edit dist equal to distance(value)
+
+
         return mins;
 
     }
@@ -214,6 +192,7 @@ public class SpellChecker {
     
     public static boolean inDictionary(String word){
         word = word.toLowerCase();
+        word = WordState.clearPunctuation(word);
         return dictionary.contains(word);
     }
     

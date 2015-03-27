@@ -62,6 +62,7 @@ public class FilePicker extends javax.swing.JFrame {
         DisplayBox.setEditable(false);
         jScrollPane1.setViewportView(DisplayBox);
 
+        ResultBox.setEditable(false);
         jScrollPane2.setViewportView(ResultBox);
 
         Correct.setText("Correct");
