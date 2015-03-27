@@ -5,9 +5,12 @@
  */
 package spellcheck;
 
-/**
+/** The {@code WordState} is a simple class which stores 
+ * initial capitalisation and punctuation parameters for 
+ * an input word. It can then apply those parameters to 
+ * a given input word. 
  *
- * @author Shaun
+ * @author Amy, Cian, Shaun
  */
 public class WordState {
     boolean isCapitalised = false;

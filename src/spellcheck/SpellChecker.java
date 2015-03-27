@@ -13,27 +13,13 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-/**
+/**The {@code SpellChecker} class contains a number of methods
+ * which produce an edit distance between two strings along with
+ * suggesting alternative words for a misspelled word.
  *
- * @author Shaun
+ * @author Amy, Cian, Shaun
  */
 public class SpellChecker {
-    public static void main(String[] args){
-        ArrayList<String> test = new ArrayList<>();
-        test.add("only");
-        test.add("one");
-        test.add("mistakle");
-        System.out.println(dictionary.contains("a"));
-        /*for(String word: dictionary){
-            System.out.println(word);
-            if(word.equals("id")){
-               break;
-            }
-           
-        }*/
-        //fixWords(test);
-        
-    }
     
     static ArrayList<String> dictionary = loadDictionary("dictXtra.txt");
     
@@ -111,32 +97,6 @@ public class SpellChecker {
         return mins;
 
     }
-    
-    public static ArrayList<String> fixWords(ArrayList<String> text){
-        //ArrayList<String> output = new ArrayList<>();
-        for(int i = 0; i < text.size(); i++){
-            System.out.println("Checking " + text.get(i));
-            if(!inDictionary(text.get(i))){
-                System.out.println("Fixing " + text.get(i));
-                text.set(i, spellCheck(text.get(i)).get(0));
-                System.out.println("Is now " + text.get(i));
-            }
-        }
-        
-        
-        return text;
-    }
-
-    private static int findMinEditDist(ArrayList<Integer> arr) {
-            int min = 10000;
-            for (int i = 0; i < arr.size(); i++) {
-                    if (arr.get(i) < min ) {
-                            min = arr.get(i);
-                    }
-            }
-
-            return min;			
-    }
 
     private static int minimum(int a, int b, int c) {                            
         return Math.min(Math.min(a, b), c);                                      
@@ -194,8 +154,7 @@ public class SpellChecker {
         word = word.toLowerCase();
         word = WordState.clearPunctuation(word);
         return dictionary.contains(word);
-    }
-    
+    }    
     
     public static int DLdistance(String target, String source) {
 		

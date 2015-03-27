@@ -7,17 +7,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JFileChooser;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
+/** The {@code SpellCheckGUI} allows the user to select a 
+ * text file on their computer and correct each spelling error
+ * from a selection of suggested words.
+ * The resulting output can then be saved to a new file. 
  *
- * @author Shaun
+ * @author Amy, Cian, Shaun
  */
-public class FilePicker extends javax.swing.JFrame {
+public class SpellCheckGUI extends javax.swing.JFrame {
     
 
     private String filename;
@@ -25,7 +22,7 @@ public class FilePicker extends javax.swing.JFrame {
     private Iterator<String> textIter;
 
     
-    public FilePicker() {
+    public SpellCheckGUI() {
         
         initComponents();
         suggestedWords.removeAllItems();
@@ -142,7 +139,7 @@ public class FilePicker extends javax.swing.JFrame {
 
     private void OpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenFileActionPerformed
         JFileChooser choose = new JFileChooser();
-        int failure = choose.showOpenDialog(FilePicker.this);
+        int failure = choose.showOpenDialog(SpellCheckGUI.this);
         if(failure == 0){
             File file = choose.getSelectedFile();
             filename = file.getAbsolutePath();
@@ -172,7 +169,7 @@ public class FilePicker extends javax.swing.JFrame {
 
     private void saveFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFileActionPerformed
         JFileChooser save = new JFileChooser();
-        int check = save.showSaveDialog(FilePicker.this);
+        int check = save.showSaveDialog(SpellCheckGUI.this);
         if(check == 0){
             File file = save.getSelectedFile();
             try(BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsolutePath()))){
@@ -221,19 +218,20 @@ public class FilePicker extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FilePicker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SpellCheckGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FilePicker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SpellCheckGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FilePicker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SpellCheckGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FilePicker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SpellCheckGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new FilePicker().setVisible(true);
+            new SpellCheckGUI().setVisible(true);
         });
     }
 
