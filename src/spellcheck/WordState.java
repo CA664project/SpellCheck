@@ -17,12 +17,12 @@ public class WordState {
     String punctuation;
     String text;
     
-    public static void main(String[] args){
+    /*public static void main(String[] args){
         WordState word = new WordState("HullaBalloo.");
         word.saveState();
         System.out.println(isCapital("TesTer"));
         System.out.println(word.applyState("tester"));
-    }
+    }*/
     
     public WordState(String input){
         this.text = input;

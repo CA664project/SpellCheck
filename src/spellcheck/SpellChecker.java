@@ -22,17 +22,18 @@ import java.util.Set;
 public class SpellChecker {
     
     static ArrayList<String> dictionary = loadDictionary("dictXtra.txt");
+    static int suggestions = 5;
     
     public static ArrayList<String> getText(String filename){
         //Stores the list of words
         File file = new File(filename);
         ArrayList<String> text = new ArrayList<>();
         try{
-        Scanner inputText = new Scanner(file);
-        while(inputText.hasNext()){
-            text.add(inputText.next());
-            //System.out.println(text.get(text.size()-1));            
-        }
+            Scanner inputText = new Scanner(file);
+            while(inputText.hasNext()){
+                text.add(inputText.next());
+                //System.out.println(text.get(text.size()-1));            
+            }
         } catch(FileNotFoundException e){
             text.add("File not found");
         }
@@ -55,6 +56,8 @@ public class SpellChecker {
             put(key, value)
         ****/
         int minEditDist = Integer.MAX_VALUE;
+        
+        
       
         int currEditDist;
         for (int i = 0; i < dictionary.size(); i++) {
@@ -74,8 +77,8 @@ public class SpellChecker {
         
         int distance = minEditDist;
         int count = 0;
-        while(count < 5 && i.hasNext()) {
-            while(count < 5 && i.hasNext() ) {
+        while(count < suggestions && i.hasNext()) {
+            while(count < suggestions && i.hasNext() ) {
                 me = i.next();
                 if (me.getValue() == distance) {
                     mins.add(state.applyState(me.getKey()));
