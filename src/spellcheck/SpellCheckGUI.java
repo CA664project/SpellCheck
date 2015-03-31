@@ -3,10 +3,12 @@ package spellcheck;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JFileChooser;
+
 /** The {@code SpellCheckGUI} allows the user to select a 
  * text file on their computer and correct each spelling error
  * from a selection of suggested words.
@@ -21,11 +23,15 @@ public class SpellCheckGUI extends javax.swing.JFrame {
     private ArrayList<String> words;
     private Iterator<String> textIter;
 
-    
+    /**
+     * Generates the UI with a blank suggested words list with 5 as a default 
+     * number of suggestions
+     */
     public SpellCheckGUI() {
         
         initComponents();
         suggestedWords.removeAllItems();
+        suggestionNo.setValue(SpellChecker.suggestions);
     }
 
     /**
@@ -46,6 +52,9 @@ public class SpellCheckGUI extends javax.swing.JFrame {
         suggestedWords = new javax.swing.JComboBox();
         select = new javax.swing.JButton();
         saveFile = new javax.swing.JButton();
+        suggestionNo = new javax.swing.JSpinner();
+        setSuggNo = new javax.swing.JButton();
+        currentWord = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -85,6 +94,15 @@ public class SpellCheckGUI extends javax.swing.JFrame {
             }
         });
 
+        setSuggNo.setText("Set Sugg No");
+        setSuggNo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                setSuggNoActionPerformed(evt);
+            }
+        });
+
+        currentWord.setText("Current Word");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -103,16 +121,22 @@ public class SpellCheckGUI extends javax.swing.JFrame {
                         .addComponent(jScrollPane2)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(suggestedWords, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(select))
+                                        .addGap(34, 34, 34)
+                                        .addComponent(saveFile))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(saveFile)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(suggestedWords, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addComponent(setSuggNo)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(suggestionNo)))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(select)
+                                    .addGap(30, 30, 30)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(currentWord)
+                                .addGap(50, 50, 50)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -127,10 +151,17 @@ public class SpellCheckGUI extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(suggestedWords, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(select)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(currentWord)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(suggestedWords, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(select)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(suggestionNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(setSuggNo))
+                        .addGap(35, 35, 35)
                         .addComponent(saveFile))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE))
                 .addContainerGap())
@@ -163,9 +194,17 @@ public class SpellCheckGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_CorrectActionPerformed
 
     private void selectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectActionPerformed
-        if(suggestedWords.getItemCount() > 0){
-            correctNext(suggestedWords.getSelectedItem().toString());
+        ResultBox.setText(ResultBox.getText() + suggestedWords.getSelectedItem() + " ");
+        if(textIter.hasNext()){            
+            correctNext(textIter.next());
+        } else {
+            currentWord.removeAll();
+            suggestedWords.removeAllItems();
         }
+        
+        /*if(suggestedWords.getItemCount() > 0){
+            correctNext(suggestedWords.getSelectedItem().toString());
+        }*/
         
     }//GEN-LAST:event_selectActionPerformed
 
@@ -177,26 +216,31 @@ public class SpellCheckGUI extends javax.swing.JFrame {
             try(BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsolutePath()))){
                 bw.write(ResultBox.getText());  
                 bw.close();
-            } catch(Exception e){}   
+            } catch(IOException e){}   
         }
 
     }//GEN-LAST:event_saveFileActionPerformed
 
+    private void setSuggNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setSuggNoActionPerformed
+        correctNext(suggestedWords.getItemAt(suggestedWords.getItemCount() - 1).toString());
+    }//GEN-LAST:event_setSuggNoActionPerformed
+
     private void correctNext(String word){
+        currentWord.setText(word);
         List<String> suggWords;
+        
         if(!SpellChecker.inDictionary(word)){
-            suggWords = SpellChecker.spellCheck(word);
+            suggWords = SpellChecker.spellCheck(word, (int) suggestionNo.getValue());
             suggestedWords.removeAllItems();
             for(String entry : suggWords){
                 suggestedWords.addItem(entry);
             }            
         } else {
-            
-            if(textIter.hasNext()){
-                ResultBox.setText(ResultBox.getText() + word + " ");
+            ResultBox.setText(ResultBox.getText() + word + " ");
+            if(textIter.hasNext()){                
                 correctNext(textIter.next());
-            } else {
-                ResultBox.setText(ResultBox.getText() + word + " ");
+            } else { 
+                currentWord.removeAll();
                 suggestedWords.removeAllItems();
             }            
         }       
@@ -242,10 +286,13 @@ public class SpellCheckGUI extends javax.swing.JFrame {
     private javax.swing.JTextPane DisplayBox;
     private javax.swing.JButton OpenFile;
     private javax.swing.JTextPane ResultBox;
+    private javax.swing.JLabel currentWord;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton saveFile;
     private javax.swing.JButton select;
+    private javax.swing.JButton setSuggNo;
     private javax.swing.JComboBox suggestedWords;
+    private javax.swing.JSpinner suggestionNo;
     // End of variables declaration//GEN-END:variables
 }
