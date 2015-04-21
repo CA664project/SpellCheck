@@ -25,9 +25,9 @@ public class SpellChecker {
     static ArrayList<String> dictionary = loadDictionary("dictXtra.txt");
     static int suggestions = 5;
     
-    public static void main(String[] args){
+    /*public static void main(String[] args){
         spellCheck("hrttmm", 1000);
-    }
+    }*/
 
     /**
      * Takes in a file and adds all tokens separated by a space to a List
@@ -46,7 +46,8 @@ public class SpellChecker {
                 //System.out.println(text.get(text.size()-1));            
             }
             long afterTime = System.nanoTime();
-            System.out.println("The time to load the " + filename + " was: " + (afterTime - beforeTime) + " ns");
+            System.out.println("The time to load the " + filename + " was: " + 
+                    (afterTime - beforeTime) + " ns");
         } catch(FileNotFoundException e){
             text.add("File not found");
         }
@@ -81,7 +82,8 @@ public class SpellChecker {
          * Create a map: Key - word; Value - edit distance
          */        
         HashMap editDwords = new HashMap();
-        ArrayList<String> mins = new ArrayList<>(); //stores the list of words with smallest minEditDist
+        ArrayList<String> mins = new ArrayList<>(); 
+            //stores the list of words with smallest minEditDist
         
         //Get capitalisation/punctuation state of the word
         WordState state = new WordState(input); 
@@ -99,7 +101,8 @@ public class SpellChecker {
         int minEditDist = Integer.MAX_VALUE;          
         int currEditDist;
         
-        //System.out.println("Before Map: " + (System.currentTimeMillis() - startTime) + " ms");
+        //System.out.println("Before Map: " + 
+        //              (System.currentTimeMillis() - startTime) + " ms");
         
         //Generates the map
         for (int i = 0; i < dictionary.size(); i++) {
@@ -185,14 +188,14 @@ public class SpellChecker {
                     dist[0][j]= j;
             }
 
-            /***********
-            for(int i=0; i<target.length()+1; i++){  
-                for(int j=0; j<source.length()+1; j++){  
-
-                        System.out.print(" [ " + dist[i][j] + " ] ");
-                }
-                System.out.print("\n");
-            }
+            /*
+            *for(int i=0; i<target.length()+1; i++){  
+            *    for(int j=0; j<source.length()+1; j++){  
+            * 
+            *            System.out.print(" [ " + dist[i][j] + " ] ");
+            *    }
+            *    System.out.print("\n");
+            *}
             ***********/
             //System.out.println();
             //System.out.println(dist[0][0]);
@@ -205,13 +208,13 @@ public class SpellChecker {
                         dist[i-1][j-1]+((target.charAt(i-1)== source.charAt(j-1)) ? 0 : 1)); // boolean to int here
                 }
             }
-            /***********
-            for(int i=0; i<target.length()+1; i++){  
-            for(int j=0; j<source.length()+1; j++){  
-
-                    System.out.print(" [ " + dist[i][j] + " ] ");
-            }
-            System.out.print("\n");
+        /*
+            *for(int i=0; i<target.length()+1; i++){  
+            *for(int j=0; j<source.length()+1; j++){  
+            *
+            *        System.out.print(" [ " + dist[i][j] + " ] ");
+            *}
+            *System.out.print("\n");
         }
             ***********/
             return dist[target.length()][source.length()]; 
@@ -302,7 +305,7 @@ public class SpellChecker {
                 dict.add(i);
             }
         }catch (IOException e) {
-                System.out.println("Error: IOException in spellCheck() method! (unable to read dict.txt?)");
+                System.out.println("Error: IOException in spellCheck() method! (unable to read " +filename + "");
         }
         return dict;
     }
